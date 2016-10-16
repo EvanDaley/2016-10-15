@@ -3,39 +3,29 @@ using System.Collections;
 
 public class NavmeshPlayer : MonoBehaviour {
 
-	public int previousWaypoint;
 	public NavMeshAgent agent;
-	private int movementStatus = 0;
-
+	public Vector3 target;
+	public movementStates curMovementState;
 
 	void Start()
 	{
 		agent.updateRotation = false;
 	}
 
-	public void SetCycle(int status)
+	public void UpdatePath(Vector3 target)
 	{
-		movementStatus = status;
-		UpdatePath ();
+		if (curMovementState != movementStates.locked)
+		{
+			agent.SetDestination (target);
+			this.target = target;
+		}
 	}
 
-	void UpdatePath()
+	public void UpdatePath()
 	{
-		if (movementStatus == 0)
+		if (curMovementState != movementStates.locked)
 		{
-			agent.SetDestination (transform.position);
-		}
-		else if (movementStatus == 1)
-		{
-			Waypoint nextPos = WaypointManager.Instance.FindNextWaypointForward (previousWaypoint);
-			if(nextPos != null)
-				agent.SetDestination (nextPos.transform.position);
-		}
-		else if (movementStatus == 2)
-		{
-			Waypoint nextPos = WaypointManager.Instance.FindNextWaypointBackward (previousWaypoint);
-			if(nextPos != null)
-				agent.SetDestination (nextPos.transform.position);
+			agent.SetDestination (target);
 		}
 	}
 
@@ -43,17 +33,17 @@ public class NavmeshPlayer : MonoBehaviour {
 	{
 		if (other.gameObject.layer == 10)
 		{
-			Waypoint waypoint = other.GetComponent<Waypoint> ();
-			if (waypoint != null)
-			{
-				if(movementStatus == 1 && previousWaypoint < waypoint.value)
-					previousWaypoint = waypoint.value;
-
-				if(movementStatus == 2 && previousWaypoint > waypoint.value)
-					previousWaypoint = waypoint.value;
-			}
+//			Waypoint waypoint = other.GetComponent<Waypoint> ();
+//			if (waypoint != null)
+//			{
+//				if(movementStatus == 1 && previousWaypoint < waypoint.value)
+//					previousWaypoint = waypoint.value;
+//
+//				if(movementStatus == 2 && previousWaypoint > waypoint.value)
+//					previousWaypoint = waypoint.value;
+//			}
 			
-			UpdatePath ();
+			UpdatePath (target);
 		}
 	}
 
@@ -62,5 +52,14 @@ public class NavmeshPlayer : MonoBehaviour {
 		// look toward position that we are shooting at
 		//FaceTarget (Vector3.zero);
 	}
+}
+
+public enum movementStates
+{
+	forward,
+	idle,
+	reverse,
+	auto,
+	locked
 }
 
