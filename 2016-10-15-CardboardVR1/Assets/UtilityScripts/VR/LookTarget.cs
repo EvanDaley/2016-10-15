@@ -4,13 +4,13 @@ using System.Collections;
 
 [RequireComponent(typeof(Collider))]
 public class LookTarget : MonoBehaviour, IGvrGazeResponder {
-	private Vector3 startingPosition;
+	//private Vector3 startingPosition;
 
 	public Color hitColor = Color.green;
 	public Color nonhitColor = Color.red;
 
 	void Start() {
-		startingPosition = transform.localPosition;
+		//startingPosition = transform.localPosition;
 		SetGazedAt(false);
 	}
 
